@@ -11,7 +11,7 @@ int main(void)
 	char i;
 
 	for (i = 'a' ; i <= 'z' ; i++)
-		putcaher(i);
-	putcaher('\n');
+		putchar(i);
+	putchar('\n');
 	return (0);
 }
