@@ -1,8 +1,8 @@
 #include "main.h"
 /**
- * puts2 - function should only print one characteout of two
- * @str: input
- * Return: print
+ * puts2 - function should print strings
+ * @str: function parameter
+ * Return: 0
  */
 void puts2(char *str)
 {
