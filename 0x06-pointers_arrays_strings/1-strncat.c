@@ -1,6 +1,6 @@
 #include  "main.h"
 /**
- * *strcat -concatenate two strings
+ * *_strcat - concatenate two strings
  * @dest: destination string
  * @src: source string
  * @n: number of characters to be appended
