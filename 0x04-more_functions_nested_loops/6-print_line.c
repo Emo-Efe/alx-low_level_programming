@@ -2,9 +2,9 @@
 
 /**
  *
- *print_line - draws a straight line in terminal
+ * print_line - draws a straight line in terminal
  *
- *@n: numberof times cha should be printed
+ * @n: numberof times cha should be printed
  */
 
 void print_line(int n)
