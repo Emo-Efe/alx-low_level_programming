@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "main.h"
+#include "list.h"
 
 /**
  * free_listint - This function frees a linked list
