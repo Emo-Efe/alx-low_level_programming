@@ -1,18 +1,19 @@
 #include "main.h"
 #include <stdio.h>
+#include <stdlib.h>
 #define BUF_SIZE 1024
 
 /**
  * error_98 - checks for error 98
  * @buf: The Buffer
- * @_rd0: The value to check
+ * @rd: The value to check
  * @argv: argument vector
  */
 void error_98(int file_from, char *buf, char *argv)
 {
 	if (file_from < 0)
 	{
-		dprintf(STDERR_FILENO, "Error: can't read from file %\n", argv);
+		dprintf(STDERR_FILENO, "Error: can't read from file %s\n", argv);
 		free(buf);
 		exit(98);
 	}
@@ -21,14 +22,14 @@ void error_98(int file_from, char *buf, char *argv)
 /**
  * error_99 - checks for error 99
  * @buf: The Buffer
- * @_rd0: The value to check
+ * @rd: The value to check
  * @argv: argument vector
  */
 void error_99(int file_from, char *buf, char *argv)
 {
 	if (file_from < 0)
 	{
-		dprintf(STDERR_FILENO, "Error: can't write to %\n", argv);
+		dprintf(STDERR_FILENO, "Error: can't write to %s\n", argv);
 		free(buf);
 		exit(99);
 	}
@@ -37,14 +38,14 @@ void error_99(int file_from, char *buf, char *argv)
 /**
  * error_100 - checks for error 100
  * @buf: The Buffer
- * @_rd0: The value to check
+ * @rd: The value to check
  * @argv: argument vector
  */
 void error_100(int file_from, char *buf)
 {
 	if (file_from < 0)
 	{
-		dprintf(STDERR_FILENO, "Error: can't close %\n", file_from);
+		dprintf(STDERR_FILENO, "Error: can't close %i\n", file_from);
 		free(buf);
 		exit(100);
 	}
@@ -59,10 +60,10 @@ void error_100(int file_from, char *buf)
  * Return: Always 0.
  */
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	int file_from, file_to;
-	int _rd0, _rd1;
+	int rd, wr;
 	char *buf;
 
 	if (argc != 3)
@@ -75,27 +76,33 @@ int main(int argc, char **argv)
 	if (!buf)
 		return (0);
 
-	file_to = open(argv[1], O_RDONLY);
-	error_98(file_to, buf, argv[1]);
-
-	file_from = open(argv[2], O_WRONLY | O_TRUNC | O_CREAT, 0664);
-	error_99(file_from, buf, argv[2]);
+	file_from = open(argv[1], O_RDONLY);
+	rd = read(file_from, buf, BUF_SIZE);
+	file_to = open(argv[2], O_WRONLY | O_TRUNC | O_CREAT, 0664);
 
 	do {
-		_rd0 = read(file_to, buf, BUF_SIZE);
-		if (_rd0 == 0)
-			break;
-		error_98(_rd0, buf, argv[1]);
+		if (file_from == -1 || rd == -1)
+		{
+			dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
+			free(buf);
+			exit(98);
+		}
 
-		_rd1 = write(file_from, buf, _rd0);
-		error_99(_rd1, buf, argv[2]);
+		wr = write(file_to, buf, rd);
+		if (file_to == -1 || wr == -1)
+		{
+			dprintf(STDERR_FILENO, "Error: Can't write to %s\n", argv[2]);
+			free(buf);
+			exit(99);
+		}
 
-	} while (_rd1 >= BUF_SIZE);
+		rd = read(file_from, buf, BUF_SIZE);
+		file_to = open(argv[2], O_WRONLY | O_APPEND);
 
-	_rd0 = close(file_from);
-	error_100(_rd0, buf);
-	_rd0 = close(file_to);
-	error_100(_rd0, buf);
+	} while (rd > 0);
+
+	close(file_from);
+	close(file_to);
 	free(buf);
 	return (0);
 }
